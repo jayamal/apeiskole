@@ -60,7 +60,7 @@ public class TransactionView extends VerticalLayout {
     public void init(){
         removeAll();
         GridCrud<Transaction> transactionGridCrud = new GridCrud<>(Transaction.class);
-        transactionTransactionCrudFormFactory = new TransactionCrudFormFactory(Transaction.class);
+        transactionTransactionCrudFormFactory = new TransactionCrudFormFactory(Transaction.class, studentRepository);
         transactionTransactionCrudFormFactory.setUseBeanValidation(Boolean.TRUE);
         transactionGridCrud.setUpdateOperationVisible(Boolean.FALSE);
         transactionGridCrud.setCrudFormFactory(transactionTransactionCrudFormFactory);

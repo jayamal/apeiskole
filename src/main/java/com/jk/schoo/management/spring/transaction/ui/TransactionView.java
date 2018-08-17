@@ -1,5 +1,6 @@
 package com.jk.schoo.management.spring.transaction.ui;
 
+import com.jk.schoo.management.spring.report.util.ReportUtil;
 import com.jk.schoo.management.spring.student.domain.Student;
 import com.jk.schoo.management.spring.student.service.dao.StudentRepository;
 import com.jk.schoo.management.spring.transaction.domain.Fee;
@@ -165,25 +166,7 @@ public class TransactionView extends VerticalLayout {
         //Add columns
         transactionGridCrud.getGrid().addColumn(new ComponentRenderer<>(transaction -> {
             HorizontalLayout buttons = new HorizontalLayout();
-                StreamResource streamSource = new StreamResource(transaction.getInvoice(), new InputStreamFactory() {
-                    @Override
-                    public InputStream createInputStream() {
-                        File initialFile = new File(com.jk.schoo.management.spring.Properties.EXPORT_PATH + File.separator + transaction.getInvoice());
-                        InputStream targetStream = null;
-                        try {
-                            targetStream = new FileInputStream(initialFile);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        return targetStream;
-                    }
-
-                    @Override
-                    public boolean requiresLock() {
-                        return false;
-                    }
-                });
-                Anchor downloadLink = new Anchor(streamSource, "Download");
+                Anchor downloadLink = new Anchor(studentFeeInvoice.generate(transaction), "Download");
                 downloadLink.getElement().setAttribute("download", true);
                 buttons.add(downloadLink);
             return buttons;
@@ -209,9 +192,7 @@ public class TransactionView extends VerticalLayout {
             public Transaction add(Transaction transaction) {
                 transaction.setInitiatedDateTime(Calendar.getInstance().getTime());
                 enrich(transaction);
-                Transaction persisted = transactionRepository.save(transaction);
-                persisted.setInvoice(studentFeeInvoice.generate(persisted));
-                return transactionRepository.save(persisted);
+                return transactionRepository.save(transaction);
             }
 
             @Override

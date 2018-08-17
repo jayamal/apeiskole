@@ -9,16 +9,13 @@ import ar.com.fdvs.dj.domain.builders.StyleBuilder;
 import ar.com.fdvs.dj.domain.constants.*;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.Transparency;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperPrint;
+import com.vaadin.flow.server.InputStreamFactory;
+import com.vaadin.flow.server.StreamResource;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -48,6 +45,39 @@ public class ReportUtil {
         exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
         exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, fos);
         exporter.exportReport();
+    }
+
+    public static StreamResource exportReportPdfAsStream(FastReportBuilder drb, String path, JRDataSource dataSource) throws JRException, FileNotFoundException {
+        DynamicReport dynamicReport = drb.build();
+        JasperPrint jasperPrint;
+        if(dataSource != null) {
+            jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), dataSource, new HashMap());
+        } else {
+            jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), new HashMap());
+        }
+
+        JRPdfExporter exporter = new JRPdfExporter();
+
+        ByteArrayOutputStream targetStream = new ByteArrayOutputStream();
+
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, targetStream);
+        exporter.exportReport();
+
+        StreamResource streamSource = new StreamResource("invoice", new InputStreamFactory() {
+            @Override
+            public InputStream createInputStream() {
+                return new ByteArrayInputStream(targetStream.toByteArray());
+            }
+
+            @Override
+            public boolean requiresLock() {
+                return false;
+            }
+        });
+
+        return streamSource;
+
     }
 
     public static Style createHeaderStyle() {

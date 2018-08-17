@@ -16,6 +16,7 @@ import com.jk.schoo.management.spring.report.util.ReportUtil;
 import com.jk.schoo.management.spring.student.service.StudentService;
 import com.jk.schoo.management.spring.transaction.domain.Transaction;
 import com.jk.schoo.management.spring.transaction.report.invoice.DetailItem;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -37,13 +38,12 @@ import java.util.UUID;
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class StudentFeeInvoice{
 
-    @Autowired
-    private StudentService studentService;
-
     public StudentFeeInvoice() {
     }
 
-    public String generate(Transaction transaction) {
+    public StreamResource generate(Transaction transaction) {
+
+        StreamResource streamResource = null;
 
         List<DetailItem> detailItems = new ArrayList<>();
         detailItems.add(new DetailItem("Student", transaction.getStudent().getReferenceIdDisplayName()));
@@ -97,13 +97,14 @@ public class StudentFeeInvoice{
             drb.addColumn(columnValue);
 
             JRDataSource dataSource = new JRBeanCollectionDataSource(detailItems);
-            ReportUtil.exportReportPdf(drb, Properties.EXPORT_PATH + File.separator + fileName + ".pdf", dataSource);
+            streamResource = ReportUtil.exportReportPdfAsStream(drb, Properties.EXPORT_PATH + File.separator + fileName + ".pdf", dataSource);
         }catch (JRException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return fileName + ".pdf";
+        return streamResource;
+
     }
 
 }

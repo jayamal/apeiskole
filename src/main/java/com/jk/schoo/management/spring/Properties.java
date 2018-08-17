@@ -8,6 +8,6 @@ import com.vaadin.flow.component.notification.Notification;
 public class Properties {
 
     public static final int NOTIFICATION_DELAY = 5000;
-    public static final String EXPORT_PATH = "";
+    public static final String EXPORT_PATH = "reports";
     public static final Notification.Position NOTIFICATION_POSITION = Notification.Position.MIDDLE;
 }

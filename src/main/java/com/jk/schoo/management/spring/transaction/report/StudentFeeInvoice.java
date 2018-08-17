@@ -58,11 +58,11 @@ public class StudentFeeInvoice{
 
         StyleBuilder titleStyle=new StyleBuilder(true);
         titleStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
-        titleStyle.setFont(new Font(Font.BIG, Font._FONT_GEORGIA, true));
+        titleStyle.setFont(new Font(Font.BIG, Font._FONT_TIMES_NEW_ROMAN, true));
 
         StyleBuilder subTitleStyle=new StyleBuilder(true);
         subTitleStyle.setHorizontalAlign(HorizontalAlign.LEFT);
-        subTitleStyle.setFont(new Font(Font.BIG, Font._FONT_GEORGIA, true));
+        subTitleStyle.setFont(new Font(Font.BIG, Font._FONT_TIMES_NEW_ROMAN, true));
 
         FastReportBuilder drb = new FastReportBuilder();
         drb.setAllowDetailSplit(false);

@@ -82,7 +82,7 @@ public class ReportUtil {
 
     public static Style createHeaderStyle() {
         StyleBuilder sb=new StyleBuilder(true);
-        sb.setFont(Font.VERDANA_MEDIUM_BOLD);
+        //sb.setFont(Font.VERDANA_MEDIUM_BOLD);
         sb.setBorder(Border.THIN());
         sb.setBorderBottom(Border.PEN_2_POINT());
         sb.setBorderColor(Color.BLACK);
@@ -96,7 +96,7 @@ public class ReportUtil {
 
     public static Style createDetailTextStyle(){
         StyleBuilder sb=new StyleBuilder(true);
-        sb.setFont(Font.VERDANA_MEDIUM);
+        //sb.setFont(Font.VERDANA_MEDIUM);
         sb.setBorder(Border.DOTTED());
         sb.setBorderColor(Color.BLACK);
         sb.setTextColor(Color.BLACK);
@@ -108,7 +108,7 @@ public class ReportUtil {
 
     public static Style createDetailItemNameStyle(){
         StyleBuilder sb=new StyleBuilder(true);
-        sb.setFont(Font.VERDANA_MEDIUM_BOLD);
+        //sb.setFont(Font.VERDANA_MEDIUM_BOLD);
         sb.setBorder(Border.THIN());
         sb.setTextColor(Color.BLACK);
         sb.setHorizontalAlign(HorizontalAlign.LEFT);
@@ -119,7 +119,7 @@ public class ReportUtil {
 
     public static Style createDetailItemValueStyle(){
         StyleBuilder sb=new StyleBuilder(true);
-        sb.setFont(Font.VERDANA_MEDIUM);
+        //sb.setFont(Font.VERDANA_MEDIUM);
         sb.setBorder(Border.THIN());
         sb.setTextColor(Color.BLACK);
         sb.setHorizontalAlign(HorizontalAlign.LEFT);
@@ -131,14 +131,14 @@ public class ReportUtil {
     public static Style createDetailItemHeaderStyle() {
         StyleBuilder sb = new StyleBuilder(true);
         sb.setBorder(Border.NO_BORDER());
-        sb.setFont(Font.VERDANA_SMALL);
+        //sb.setFont(Font.VERDANA_SMALL);
         sb.setTransparency(Transparency.TRANSPARENT);
         return sb.build();
     }
 
     public static Style createDetailNumberStyle(){
         StyleBuilder sb=new StyleBuilder(true);
-        sb.setFont(Font.VERDANA_MEDIUM);
+        //sb.setFont(Font.VERDANA_MEDIUM);
         sb.setBorder(Border.DOTTED());
         sb.setBorderColor(Color.BLACK);
         sb.setTextColor(Color.BLACK);

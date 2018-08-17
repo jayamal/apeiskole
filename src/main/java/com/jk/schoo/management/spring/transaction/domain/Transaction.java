@@ -6,6 +6,7 @@ import com.jk.schoo.management.spring.transaction.enumconstant.PaymentType;
 import com.jk.schoo.management.spring.transaction.enumconstant.TransactionStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -28,7 +29,7 @@ public class Transaction {
     public static final String FIELD_STUDENT = "student";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -39,6 +40,7 @@ public class Transaction {
     @NotNull
     private Fee fee;
     @NotNull
+    @Digits(integer = 6, fraction = 2, message = "{javax.validation.constraints.Digits.message.amount}")
     private Double amount;
     @Enumerated(EnumType.STRING)
     @NotNull

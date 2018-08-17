@@ -5,6 +5,7 @@ import com.jk.schoo.management.spring.enrollment.domain.Course;
 import com.jk.schoo.management.spring.enrollment.domain.Semester;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -24,6 +25,7 @@ public class Fee implements Reference{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
+    @Digits(integer = 6, fraction = 2, message = "{javax.validation.constraints.Digits.message.amount}")
     private Double amount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="feeType_id")

@@ -16,7 +16,7 @@ public class Batch {
     public static final String FIELD_NAME = "name";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;

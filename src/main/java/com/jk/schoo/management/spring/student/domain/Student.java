@@ -5,7 +5,6 @@ import com.jk.schoo.management.spring.transaction.domain.Fee;
 import com.jk.schoo.management.spring.transaction.domain.Reference;
 import com.jk.schoo.management.spring.transaction.domain.Transaction;
 import com.jk.schoo.management.spring.transaction.enumconstant.AmountBreakdown;
-import com.jk.schoo.management.spring.transaction.enumconstant.TransactionStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +23,8 @@ public class Student implements Reference{
     public static final String FIELD_LAST_UPDATED_DATE_TIME = "lastUpdatedDateTime";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     @NotNull
     private String name;
@@ -108,7 +108,7 @@ public class Student implements Reference{
 
     @Override
     public String getReferenceIdDisplayName() {
-        return "[ " + this.id + " ] " + this.name;
+        return "[ " + this.id + " - " + this.branch + " ] " + this.name;
     }
 
     @Override

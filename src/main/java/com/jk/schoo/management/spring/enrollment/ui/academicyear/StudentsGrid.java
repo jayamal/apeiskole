@@ -38,7 +38,7 @@ public class StudentsGrid extends GridCrud<Student> {
         getCrudFormFactory().setVisibleProperties(CrudOperation.DELETE, Student.FIELD_ID);
         setDeletedMessage("Student removed from the batch");
         setUpdateOperationVisible(Boolean.FALSE);
-        getGrid().setColumns(Student.FIELD_NAME);
+        getGrid().setColumns(Student.FIELD_ID, Student.FIELD_NAME, Student.FIELD_BRANCH);
         getGrid().getColumnByKey(Student.FIELD_NAME).setHeader("Student");
 
         setCrudListener(new CrudListener<Student>() {

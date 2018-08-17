@@ -1,6 +1,5 @@
 package com.jk.schoo.management.spring.transaction.ui;
 
-import com.jk.schoo.management.spring.*;
 import com.jk.schoo.management.spring.Properties;
 import com.jk.schoo.management.spring.student.domain.Student;
 import com.jk.schoo.management.spring.student.service.dao.StudentRepository;
@@ -13,11 +12,9 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
-import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.dom.Element;
 import org.vaadin.crudui.crud.CrudOperation;
 import org.vaadin.crudui.form.impl.form.factory.DefaultCrudFormFactory;
@@ -82,19 +79,23 @@ public class TransactionCrudFormFactory extends DefaultCrudFormFactory<Transacti
                     validationResult = ValidationResult.error(result.get().getMessage());
                 }else{
                     //Total Amount Validation
-                    Double maxAmountAllowed = 0.0;
                     Optional<Student> refreshedStudent = studentRepository.findById(transaction.getStudent().getId());
                     if(refreshedStudent.isPresent()) {
+                        Map<AmountBreakdown, Double> amountBreakdown = refreshedStudent.get().getAmountBreakdown(transaction.getFee());
                         if (transaction.getPaymentType().equals(PaymentType.REFUND)) {
-
+                            //Amount should not exceed more than the paid amount
+                            if(amountBreakdown.get(AmountBreakdown.PAID) < transaction.getAmount()){
+                                validationResult = ValidationResult.error("Amount: " + transaction.getAmount() + " is greater than paid amount: " + amountBreakdown.get(AmountBreakdown.PAID));
+                            }
                         } else {
-
+                            //Amount should not exceed more than the outstanding amount
+                            if(amountBreakdown.get(AmountBreakdown.OUTSTANDING) < transaction.getAmount()){
+                                validationResult = ValidationResult.error("Amount: " + transaction.getAmount() + " is greater than outstanding amount: " + amountBreakdown.get(AmountBreakdown.OUTSTANDING));
+                            }
                         }
-                        if (!(transaction.getAmount().equals(maxAmountAllowed) || transaction.getAmount() < maxAmountAllowed)) {
-
-                        }
-                    }else{
-
+                    }
+                    if(!validationResult.isError() && transaction.getAmount() <= 0.0){
+                        validationResult = ValidationResult.error("Amount: " + transaction.getAmount() + " should be greater than 0.0");
                     }
                 }
                 if(validationResult.isError()) {

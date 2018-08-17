@@ -1,10 +1,8 @@
 package com.jk.schoo.management.spring.transaction.ui;
 
 import com.jk.schoo.management.spring.transaction.enumconstant.AmountBreakdown;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import java.util.Map;
 

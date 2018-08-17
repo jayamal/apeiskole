@@ -1,6 +1,5 @@
 package com.jk.schoo.management.spring.transaction.ui;
 
-import com.jk.schoo.management.spring.Properties;
 import com.jk.schoo.management.spring.student.domain.Student;
 import com.jk.schoo.management.spring.student.service.dao.StudentRepository;
 import com.jk.schoo.management.spring.transaction.domain.Fee;
@@ -17,7 +16,6 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -63,6 +61,7 @@ public class TransactionView extends VerticalLayout {
         transactionTransactionCrudFormFactory = new TransactionCrudFormFactory(Transaction.class, studentRepository);
         transactionTransactionCrudFormFactory.setUseBeanValidation(Boolean.TRUE);
         transactionGridCrud.setUpdateOperationVisible(Boolean.FALSE);
+        transactionGridCrud.setDeleteOperationVisible(Boolean.FALSE);
         transactionGridCrud.setCrudFormFactory(transactionTransactionCrudFormFactory);
         transactionGridCrud.getCrudFormFactory().setVisibleProperties(Transaction.FIELD_FEE, Transaction.FIELD_STUDENT, Transaction.FIELD_AMOUNT, Transaction.FIELD_PAYMENT_TYPE, Transaction.FIELD_PAYMENT_TYPE_REFERENCE);
         ComboBox<Fee> feeComboBox = new ComboBox<>();
@@ -210,7 +209,9 @@ public class TransactionView extends VerticalLayout {
             public Transaction add(Transaction transaction) {
                 transaction.setInitiatedDateTime(Calendar.getInstance().getTime());
                 enrich(transaction);
-                return transactionRepository.save(transaction);
+                Transaction persisted = transactionRepository.save(transaction);
+                persisted.setInvoice(studentFeeInvoice.generate(persisted));
+                return transactionRepository.save(persisted);
             }
 
             @Override
@@ -220,7 +221,7 @@ public class TransactionView extends VerticalLayout {
 
             @Override
             public void delete(Transaction transaction) {
-                transactionRepository.delete(transaction);
+                throw new UnsupportedOperationException();
             }
         });
 
@@ -246,7 +247,6 @@ public class TransactionView extends VerticalLayout {
                     transaction.setStatus(null);
         }
         transaction.setInitiator("WEB_ADMIN");
-        transaction.setInvoice(studentFeeInvoice.generate(transaction));
     }
 
 }

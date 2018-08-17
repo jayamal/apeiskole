@@ -1,17 +1,21 @@
 package com.jk.schoo.management.spring.transaction.report;
 
+import ar.com.fdvs.dj.domain.AutoText;
+import ar.com.fdvs.dj.domain.ImageBanner;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
 import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.builders.StyleBuilder;
 import ar.com.fdvs.dj.domain.constants.Font;
 import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import ar.com.fdvs.dj.domain.constants.ImageScaleMode;
+import ar.com.fdvs.dj.domain.constants.Page;
 import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
 import com.jk.schoo.management.spring.Properties;
-import com.jk.schoo.management.spring.report.domain.Reportable;
 import com.jk.schoo.management.spring.report.util.ReportUtil;
 import com.jk.schoo.management.spring.student.service.StudentService;
 import com.jk.schoo.management.spring.transaction.domain.Transaction;
+import com.jk.schoo.management.spring.transaction.report.invoice.DetailItem;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -23,7 +27,6 @@ import org.springframework.context.annotation.Scope;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,40 +45,58 @@ public class StudentFeeInvoice{
 
     public String generate(Transaction transaction) {
 
+        List<DetailItem> detailItems = new ArrayList<>();
+        detailItems.add(new DetailItem("Student", transaction.getStudent().getReferenceIdDisplayName()));
+        detailItems.add(new DetailItem("Payment Type", transaction.getPaymentType().getName()));
+        detailItems.add(new DetailItem("Payment Reference", transaction.getPaymentTypeReference() != null ? transaction.getPaymentTypeReference() : "-"));
+        detailItems.add(new DetailItem("Payment Date/Time", transaction.getInitiatedDateTime().toString()));
+        detailItems.add(new DetailItem("Issuer", transaction.getInitiator()));
+        detailItems.add(new DetailItem("Amount (LKR)", String.valueOf(transaction.getAmount())));
+
+        String signatureAccepted = "(Receiver Signature)";
+        String receiverAccepted = "(Issuer Signature)";
+
         StyleBuilder titleStyle=new StyleBuilder(true);
-        titleStyle.setHorizontalAlign(HorizontalAlign.CENTER);
-        titleStyle.setFont(new Font(20, Font._FONT_GEORGIA, true));
+        titleStyle.setHorizontalAlign(HorizontalAlign.RIGHT);
+        titleStyle.setFont(new Font(Font.BIG, Font._FONT_GEORGIA, true));
 
         StyleBuilder subTitleStyle=new StyleBuilder(true);
-        subTitleStyle.setHorizontalAlign(HorizontalAlign.CENTER);
-        subTitleStyle.setFont(new Font(Font.MEDIUM, Font._FONT_GEORGIA, true));
+        subTitleStyle.setHorizontalAlign(HorizontalAlign.LEFT);
+        subTitleStyle.setFont(new Font(Font.BIG, Font._FONT_GEORGIA, true));
 
         FastReportBuilder drb = new FastReportBuilder();
         drb.setAllowDetailSplit(false);
         String fileName = UUID.randomUUID().toString();
         try {
-            drb .setTitle(transaction.getFee().getReferenceIdDisplayName())
+            drb .setTitle("# " + transaction.getId())
                 .setTitleStyle(titleStyle.build())
-                .setSubtitle(transaction.getInitiatedDateTime().toString())
+                .setSubtitle(transaction.getFee().getReferenceIdDisplayName())
                 .setSubtitleStyle(subTitleStyle.build())
-                .setPrintBackgroundOnOddRows(true)
-                .setUseFullPageWidth(true);
-            //Columns
-            Style detailNumberStyle = ReportUtil.createDetailNumberStyle();
-            Style detailTextStyle = ReportUtil.createDetailTextStyle();
-            Style headerStyle = ReportUtil.createHeaderStyle();
-            AbstractColumn columnBranch = ColumnBuilder.getNew()
-                    .setColumnProperty("id", String.class.getName())
-                    .setTitle("Invoice No").setWidth(new Integer(30))
-                    .setStyle(detailTextStyle).setHeaderStyle(headerStyle)
+                .setRightMargin(30)
+                .setBottomMargin(30)
+                .setUseFullPageWidth(true)
+                .addAutoText(signatureAccepted + "                " + receiverAccepted, AutoText.POSITION_FOOTER, AutoText.ALIGNMENT_RIGHT, 1000)
+                 .addImageBanner("logo.png", new Integer(66), new Integer(65), ImageBanner.ALIGN_LEFT, ImageScaleMode.FILL)
+                .setPageSizeAndOrientation(new Page(420, 595, Boolean.FALSE));
+            Style detailNameStyle = ReportUtil.createDetailItemNameStyle();
+            Style detailValueStyle = ReportUtil.createDetailItemValueStyle();
+            Style headerStyle = ReportUtil.createDetailItemHeaderStyle();
+            AbstractColumn columnName= ColumnBuilder.getNew()
+                    .setColumnProperty("name", String.class.getName())
+                    .setTitle("")
+                    .setWidth(20)
+                    .setStyle(detailNameStyle).setHeaderStyle(headerStyle)
+                    .build();
+            AbstractColumn columnValue= ColumnBuilder.getNew()
+                    .setColumnProperty("value", String.class.getName())
+                    .setTitle("")
+                    .setStyle(detailValueStyle).setHeaderStyle(headerStyle)
                     .build();
 
-            drb.addColumn(columnBranch);
+            drb.addColumn(columnName);
+            drb.addColumn(columnValue);
 
-            List<Transaction> transactionList = new ArrayList<>();
-            transactionList.add(transaction);
-
-            JRDataSource dataSource = new JRBeanCollectionDataSource(transactionList);
+            JRDataSource dataSource = new JRBeanCollectionDataSource(detailItems);
             ReportUtil.exportReportPdf(drb, Properties.EXPORT_PATH + File.separator + fileName + ".pdf", dataSource);
         }catch (JRException e) {
             e.printStackTrace();

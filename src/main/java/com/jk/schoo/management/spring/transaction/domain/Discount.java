@@ -23,6 +23,7 @@ public class Discount {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @NotNull
+    @Max(6)
     private String code;
     @NotNull
     private String description;

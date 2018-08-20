@@ -27,7 +27,7 @@ public class DiscountGrid extends GridCrud<Discount> {
     public void init(){
         getCrudFormFactory().setUseBeanValidation(true);
         setDeleteOperationVisible(Boolean.FALSE);
-        getCrudFormFactory().setVisibleProperties(Discount.FIELD_CODE, Discount.FIELD_DESCRIPTION, Discount.FIELD_PERCENTAGE);
+        getCrudFormFactory().setVisibleProperties(Discount.FIELD_DESCRIPTION, Discount.FIELD_PERCENTAGE, Discount.FIELD_CODE);
         getGrid().setColumns(Discount.FIELD_CODE, Discount.FIELD_DESCRIPTION, Discount.FIELD_PERCENTAGE);
         setSizeFull();
         setCrudListener(new CrudListener<Discount>() {

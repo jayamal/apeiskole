@@ -74,6 +74,9 @@ public class MainView extends VerticalLayout {
         add(currentView);
         studentCrudView.init();
         setSizeFull();
+        setPadding(Boolean.FALSE);
+        setMargin(Boolean.FALSE);
+        setSpacing(Boolean.FALSE);
     }
 
 }

@@ -5,7 +5,6 @@ import com.jk.schoo.management.spring.report.domain.ReportStatus;
 import com.jk.schoo.management.spring.report.domain.ReportType;
 import com.jk.schoo.management.spring.report.domain.Reportable;
 import com.jk.schoo.management.spring.report.service.ReportService;
-import com.jk.schoo.management.spring.transaction.report.outstanding.OutStandingBalanceReport;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ItemLabelGenerator;
@@ -28,8 +27,6 @@ public class ReportDialog extends Dialog {
 
     private ReportService reportService;
     private ChangeHandler changeHandler;
-    @Autowired
-    private OutStandingBalanceReport outStandingBalanceReport;
     public interface ChangeHandler {
         void onChange();
     }
@@ -42,7 +39,6 @@ public class ReportDialog extends Dialog {
     public void init(){
         removeAll();
         ComboBox<Reportable> reportableComboBox = new ComboBox<>();
-        reportableComboBox.setItems(outStandingBalanceReport);
         reportableComboBox.setLabel("Report");
         reportableComboBox.setItemLabelGenerator(new ItemLabelGenerator<Reportable>() {
             @Override
@@ -86,10 +82,6 @@ public class ReportDialog extends Dialog {
                 ReportDialog.this.close();
             }
         });
-    }
-
-    public void setOutStandingBalanceReport(OutStandingBalanceReport outStandingBalanceReport) {
-        this.outStandingBalanceReport = outStandingBalanceReport;
     }
 
     public void setChangeHandler(ChangeHandler changeHandler) {

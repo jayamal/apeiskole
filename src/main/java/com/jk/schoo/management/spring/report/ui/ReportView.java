@@ -1,6 +1,6 @@
 package com.jk.schoo.management.spring.report.ui;
 
-import com.jk.schoo.management.spring.Properties;
+import com.jk.schoo.management.spring.ApplicationProperties;
 import com.jk.schoo.management.spring.report.domain.Report;
 import com.jk.schoo.management.spring.report.domain.ReportStatus;
 import com.jk.schoo.management.spring.report.service.ReportService;
@@ -76,7 +76,7 @@ public class ReportView extends VerticalLayout{
                 StreamResource streamSource = new StreamResource(report.getPath(), new InputStreamFactory() {
                     @Override
                     public InputStream createInputStream() {
-                        File initialFile = new File(Properties.EXPORT_PATH + File.separator + report.getPath());
+                        File initialFile = new File(ApplicationProperties.EXPORT_PATH + File.separator + report.getPath());
                         InputStream targetStream = null;
                         try {
                             targetStream = new FileInputStream(initialFile);

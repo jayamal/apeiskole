@@ -6,12 +6,16 @@ import ar.com.fdvs.dj.domain.DynamicReport;
 import ar.com.fdvs.dj.domain.Style;
 import ar.com.fdvs.dj.domain.builders.FastReportBuilder;
 import ar.com.fdvs.dj.domain.builders.StyleBuilder;
-import ar.com.fdvs.dj.domain.constants.*;
-import ar.com.fdvs.dj.domain.constants.Font;
+import ar.com.fdvs.dj.domain.constants.Border;
+import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import ar.com.fdvs.dj.domain.constants.Transparency;
+import ar.com.fdvs.dj.domain.constants.VerticalAlign;
 import com.vaadin.flow.server.InputStreamFactory;
 import com.vaadin.flow.server.StreamResource;
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 
 import java.awt.*;
@@ -47,26 +51,28 @@ public class ReportUtil {
         exporter.exportReport();
     }
 
-    public static StreamResource exportReportPdfAsStream(FastReportBuilder drb, String path, JRDataSource dataSource) throws JRException, FileNotFoundException {
-        DynamicReport dynamicReport = drb.build();
-        JasperPrint jasperPrint;
-        if(dataSource != null) {
-            jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), dataSource, new HashMap());
-        } else {
-            jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), new HashMap());
-        }
+    public static StreamResource exportReportPdfAsStream(FastReportBuilder drb, String name, JRDataSource dataSource) throws JRException, FileNotFoundException {
 
-        JRPdfExporter exporter = new JRPdfExporter();
 
-        ByteArrayOutputStream targetStream = new ByteArrayOutputStream();
-
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, targetStream);
-        exporter.exportReport();
-
-        StreamResource streamSource = new StreamResource("invoice", new InputStreamFactory() {
+        StreamResource streamSource = new StreamResource(name + ".pdf", new InputStreamFactory() {
             @Override
             public InputStream createInputStream() {
+                ByteArrayOutputStream targetStream = new ByteArrayOutputStream();
+                try {
+                DynamicReport dynamicReport = drb.build();
+                JasperPrint jasperPrint;
+                if(dataSource != null) {
+                    jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), dataSource, new HashMap());
+                } else {
+                    jasperPrint = DynamicJasperHelper.generateJasperPrint(dynamicReport, new ClassicLayoutManager(), new HashMap());
+                }
+                JRPdfExporter exporter = new JRPdfExporter();
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, targetStream);
+                    exporter.exportReport();
+                } catch (JRException e) {
+                    e.printStackTrace();
+                }
                 return new ByteArrayInputStream(targetStream.toByteArray());
             }
 

@@ -1,20 +1,18 @@
 package com.jk.schoo.management.spring.student.domain;
 
 import com.jk.schoo.management.spring.enrollment.domain.Batch;
-import com.jk.schoo.management.spring.transaction.domain.Fee;
-import com.jk.schoo.management.spring.transaction.domain.Reference;
-import com.jk.schoo.management.spring.transaction.domain.Transaction;
-import com.jk.schoo.management.spring.transaction.enumconstant.AmountBreakdown;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by jayamalk on 7/5/2018.
  */
 @Entity
-public class Student implements Reference{
+public class Student{
 
     public static final String FIELD_ID = "id";
     public static final String FIELD_NAME = "name";
@@ -41,17 +39,6 @@ public class Student implements Reference{
             },
             mappedBy = "students")
     private Set<Batch> batches = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval = true)
-    private Set<Transaction> transactions = new HashSet<>();
-
-    public Set<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(Set<Transaction> transactions) {
-        this.transactions = transactions;
-    }
 
     public Set<Batch> getBatches() {
         return batches;
@@ -102,26 +89,6 @@ public class Student implements Reference{
     }
 
     @Override
-    public String getReferenceId() {
-        return String.valueOf(this.id);
-    }
-
-    @Override
-    public String getReferenceIdDisplayName() {
-        return "[ " + this.id + " - " + this.branch + " ] " + this.name;
-    }
-
-    @Override
-    public String getReferenceType() {
-        return "student";
-    }
-
-    @Override
-    public String getReferenceTypeDisplayName() {
-        return "Student";
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -137,27 +104,4 @@ public class Student implements Reference{
         return getId() != null ? getId().hashCode() : 0;
     }
 
-    public Map<AmountBreakdown, Double> getAmountBreakdown(Fee fee){
-        Set<Transaction> transactions = this.getTransactions();
-        Double discount = 0.0;
-        Double penalty = 0.0;
-        Double amount = fee != null ? fee.getAmount() : 0.0;
-        Double outstanding = 0.0;
-        Double paid = 0.0;
-        if(transactions != null) {
-            for (Transaction transaction : transactions) {
-                if(fee.getId().equals(transaction.getFee().getId())) {
-                    paid += transaction.getAmount();
-                }
-            }
-        }
-        outstanding = amount - paid - discount + penalty;
-        Map<AmountBreakdown, Double> amountBreakdownDoubleMap = new HashMap<>();
-        amountBreakdownDoubleMap.put(AmountBreakdown.OUTSTANDING, outstanding);
-        amountBreakdownDoubleMap.put(AmountBreakdown.AMOUNT, amount);
-        amountBreakdownDoubleMap.put(AmountBreakdown.PAID, paid);
-        amountBreakdownDoubleMap.put(AmountBreakdown.DISCOUNT, discount);
-        amountBreakdownDoubleMap.put(AmountBreakdown.PENALTY, penalty);
-        return amountBreakdownDoubleMap;
-    }
 }

@@ -1,25 +1,17 @@
 package com.jk.schoo.management.spring;
 
-import com.jk.schoo.management.spring.enrollment.domain.AcademicYear;
-import com.jk.schoo.management.spring.enrollment.domain.Batch;
-import com.jk.schoo.management.spring.enrollment.domain.Course;
-import com.jk.schoo.management.spring.enrollment.domain.Semester;
-import com.jk.schoo.management.spring.enrollment.service.EnrollmentService;
-import com.jk.schoo.management.spring.enrollment.service.dao.AcademicYearRepository;
-import com.jk.schoo.management.spring.enrollment.service.dao.BatchRepository;
-import com.jk.schoo.management.spring.student.domain.Student;
-import com.jk.schoo.management.spring.student.service.dao.StudentRepository;
-import com.jk.schoo.management.spring.transaction.domain.FeeType;
-import com.jk.schoo.management.spring.transaction.service.dao.FeeTypeRepository;
+import com.jk.schoo.management.spring.user.domain.Role;
+import com.jk.schoo.management.spring.user.domain.User;
+import com.jk.schoo.management.spring.user.service.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.*;
 
 /**
  * The entry point of the Spring Boot application.
@@ -36,9 +28,12 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner loadData(BatchRepository batchRepository, StudentRepository repository, EnrollmentService enrollmentService, AcademicYearRepository academicYearRepository, FeeTypeRepository feeTypeRepository) {
+    public CommandLineRunner loadData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return (args) -> {
-            for(int i = 0; i < 50 ; i++){
+
+
+
+    /*        for(int i = 0; i < 50 ; i++){
                 Student student = new Student();
                 student.setName("Name " + i);
                 student.setBranch(i % 2 == 0 ? "Kandy" : "Digana");
@@ -110,9 +105,38 @@ public class Application {
 
             FeeType feeType = new FeeType();
             feeType.setName("Term Fee");
-            feeTypeRepository.save(feeType);
-
+            feeTypeRepository.save(feeType);*/
+            createAdmin(userRepository, passwordEncoder);
         };
+    }
+
+    private User createBaker(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return userRepository.save(createUser("baker@vaadin.com", "Heidi", "Carter", passwordEncoder.encode("baker"),
+                Role.BAKER, "https://randomuser.me/api/portraits/women/76.jpg", false));
+    }
+
+    private User createBarista(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return userRepository
+                .save(createUser("barista@vaadin.com", "Malin", "Castro", passwordEncoder.encode("barista"),
+                        Role.BARISTA, "https://randomuser.me/api/portraits/women/89.jpg", true));
+    }
+
+    private User createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        return userRepository.save(createUser("admin@vaadin.com", "Göran", "Rich", passwordEncoder.encode("admin"),
+                Role.ADMIN, "https://randomuser.me/api/portraits/men/34.jpg", true));
+    }
+
+    private User createUser(String email, String firstName, String lastName, String passwordHash, String role,
+                            String photoUrl, boolean locked) {
+        User user = new User();
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPasswordHash(passwordHash);
+        user.setRole(role);
+        user.setPhotoUrl(photoUrl);
+        user.setLocked(locked);
+        return user;
     }
 
     public static ApplicationContext getApplicationContext() {
